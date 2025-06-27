@@ -1,22 +1,23 @@
-﻿{
+{
     "WPFTweaks":  [
-                      "WPFTweaksWifi",
-                      "WPFTweaksHome",
-                      "WPFTweaksRemoveEdge",
-                      "WPFTweaksRemoveHomeGallery",
-                      "WPFTweaksDisableLMS1",
-                      "WPFTweaksIPv46",
-                      "WPFTweaksDeBloat",
-                      "WPFTweaksConsumerFeatures",
-                      "WPFTweaksTele",
                       "WPFTweaksDisplay",
+                      "WPFTweaksDeBloat",
+                      "WPFTweaksDisableLMS1",
+                      "WPFTweaksRemoveHome",
                       "WPFTweaksAH",
-                      "WPFTweaksRightClickMenu",
-                      "WPFTweaksRemoveCopilot",
-                      "WPFTweaksLoc",
-                      "WPFTweaksRemoveOnedrive",
                       "WPFTweaksServices",
+                      "WPFTweaksConsumerFeatures",
+                      "WPFTweaksRemoveCopilot",
+                      "WPFTweaksWifi",
+                      "WPFTweaksTele",
+                      "WPFTweaksDisableBGapps",
+                      "WPFTweaksRemoveGallery",
+                      "WPFTweaksRemoveOnedrive",
+                      "WPFTweaksRightClickMenu",
                       "WPFTweaksRecallOff",
-                      "WPFTweaksDisableBGapps"
+                      "WPFTweaksLoc",
+                      "WPFTweaksDisableWpbtExecution",
+                      "WPFTweaksDVR",
+                      "WPFTweaksDisableExplorerAutoDiscovery"
                   ]
 }
