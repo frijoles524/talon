@@ -25,7 +25,7 @@ def main():
         sys.exit(1)
     logger.info(f"Using WinUtil config: {config_path}")
     cmd1 = (
-        f'iex "& {{ $(irm https://christitus.com/win) }} -Config \'{config_path}\' -Run"'
+        f'iex "& {{ $(irm https://christitus.com/win) }} -Config \'{config_path}\' -Run -NoUI"'
     )
     logger.info("Executing ChrisTitusTech WinUtil via remote command")
     try:
