@@ -130,6 +130,8 @@ def run_powershell_command(
         "-NoProfile",
         "-ExecutionPolicy",
         "Bypass",
+        "-WindowStyle",
+        "Hidden",
         "-Command",
         command,
     ]
