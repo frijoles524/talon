@@ -36,9 +36,9 @@ def main():
     logger.info(f"Executing PowerShell script: {script}")
     try:
         run_powershell_script(script)
-        logger.info(f"\u2714 Successfully executed {script}")
+        logger.info(f"Successfully executed {script}")
     except Exception as e:
-        logger.error(f"\u2716 Failed to execute {script}: {e}")
+        logger.error(f"Failed to execute {script}: {e}")
         try:
             show_error_popup(
                 f"Failed to execute PowerShell script:\n{script}\n\n{e}",
