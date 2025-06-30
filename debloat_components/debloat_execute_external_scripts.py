@@ -3,6 +3,8 @@ import sys
 from utilities.util_logger import logger
 from utilities.util_powershell_handler import run_powershell_command
 from utilities.util_error_popup import show_error_popup
+from utilities.util_download_handler import download_file
+import re
 
 
 
@@ -24,10 +26,46 @@ def main():
             pass
         sys.exit(1)
     logger.info(f"Using WinUtil config: {config_path}")
-    cmd1 = (
-        f'iex "& {{ $(irm https://christitus.com/win) }} -Config \'{config_path}\' -Run -NoUI"'
-    )
-    logger.info("Executing ChrisTitusTech WinUtil via remote command")
+    
+    # Download WinUtil script to temp path
+    winutil_temp_dir = os.environ.get('TEMP', '/tmp')
+    winutil_temp_path = os.path.join(winutil_temp_dir, 'talon', 'winutil.ps1')
+    winutil_url = 'https://christitus.com/win'
+    logger.info(f"Downloading ChrisTitusTech WinUtil to {winutil_temp_path}")
+    if not download_file(winutil_url, dest_name='winutil.ps1'):
+        logger.error(f"Failed to download ChrisTitusTech WinUtil")
+        try:
+            show_error_popup(
+                f"Failed to download ChrisTitusTech WinUtil",
+                allow_continue=False,
+            )
+        except Exception:
+            pass
+        sys.exit(1)
+    
+    # Patch the script with regex
+    # Implementation of #154
+    logger.info("Patching ChrisTitusTech WinUtil script to remove Invoke-WPFFeatureInstall pop-up")
+    try:
+        with open(winutil_temp_path, 'r', encoding='utf-8') as f:
+            script_content = f.read()
+        feature_regex = r'(?ms)^\s*Write-Host "Installing features\.\.\."\s*.*?Write-Host "Done\."'
+        patched_script = re.sub(feature_regex, '', script_content)
+        with open(winutil_temp_path, 'w', encoding='utf-8') as f:
+            f.write(patched_script)
+    except Exception as e:
+        logger.error(f"Failed to patch ChrisTitusTech WinUtil: {e}")
+        try:
+            show_error_popup(
+                f"Failed to patch ChrisTitusTech WinUtil:\n{e}",
+                allow_continue=False,
+            )
+        except Exception:
+            pass
+        sys.exit(1)
+    # Execute the patched script
+    cmd1 = f"& '{winutil_temp_path}' -Config '{config_path}' -Run -NoUI"
+    logger.info("Executing patched ChrisTitusTech WinUtil via local script")
     try:
         run_powershell_command(
             cmd1,
@@ -45,6 +83,14 @@ def main():
         except Exception:
             pass
         sys.exit(1)
+    finally:
+        # Clean up the temporary patched WinUtil script
+        try:
+            if os.path.exists(winutil_temp_path):
+                os.remove(winutil_temp_path)
+                logger.info(f"Removed temporary file: {winutil_temp_path}")
+        except Exception as e:
+            logger.warning(f"Failed to remove temporary file {winutil_temp_path}: {e}")
     args2 = [
         '-Silent',
         '-RemoveApps',
