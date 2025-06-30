@@ -83,14 +83,6 @@ def main():
         except Exception:
             pass
         sys.exit(1)
-    finally:
-        # Clean up the temporary patched WinUtil script
-        try:
-            if os.path.exists(winutil_temp_path):
-                os.remove(winutil_temp_path)
-                logger.info(f"Removed temporary file: {winutil_temp_path}")
-        except Exception as e:
-            logger.warning(f"Failed to remove temporary file {winutil_temp_path}: {e}")
     args2 = [
         '-Silent',
         '-RemoveApps',
