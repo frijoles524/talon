@@ -40,13 +40,13 @@ def main():
         sys.exit(1)
     
     # Patch the script with regex
-    logger.info("Patching ChrisTitusTech WinUtil script to disable Invoke-WPFFeatureInstall pop-up")
+    logger.info("Patching ChrisTitusTech WinUtil script to remove Invoke-WPFFeatureInstall pop-up")
     try:
         with open(winutil_path, 'r', encoding='utf-8') as f:
             script_content = f.read()
-        # Comment out the Invoke-WPFFeatureInstall call to prevent pop-up
-        feature_regex = r'(?m)^(\s*)(Invoke-WPFFeatureInstall)'
-        replacement = r'\1Write-Host "Features installation skipped"'
+        # Remove the feature install block and following wait loop
+        feature_regex = r'(?ms)^\s*Write-Host "Installing features\.\.\."\s*.*?Write-Host "Done\."'
+        replacement = 'Write-Host "Features installation skipped"\n'
         patched_script = re.sub(feature_regex, replacement, script_content)
         with open(winutil_path, 'w', encoding='utf-8') as f:
             f.write(patched_script)
