@@ -1,5 +1,6 @@
 import os
 import sys
+import re
 from utilities.util_logger import logger
 from utilities.util_powershell_handler import run_powershell_command
 from utilities.util_error_popup import show_error_popup
@@ -24,10 +25,45 @@ def main():
             pass
         sys.exit(1)
     logger.info(f"Using WinUtil config: {config_path}")
-    cmd1 = (
-        f'iex "& {{ $(irm https://christitus.com/win) }} -Config \'{config_path}\' -Run -NoUI"'
-    )
-    logger.info("Executing ChrisTitusTech WinUtil via remote command")
+    
+    winutil_dir = os.environ.get('TEMP', '/tmp')
+    winutil_path = os.path.join(winutil_dir, 'talon', 'winutil.ps1')
+    if not os.path.exists(winutil_path):
+        logger.error(f"WinUtil script not found: {winutil_path}")
+        try:
+            show_error_popup(
+                f"WinUtil script not found:\n{winutil_path}",
+                allow_continue=False,
+            )
+        except Exception:
+            pass
+        sys.exit(1)
+    
+    # Patch the script with regex
+    logger.info("Patching ChrisTitusTech WinUtil script to remove Invoke-WPFFeatureInstall pop-up")
+    try:
+        with open(winutil_path, 'r', encoding='utf-8') as f:
+            script_content = f.read()
+        # Remove the feature install block and following wait loop
+        feature_regex = r'(?ms)^\s*Write-Host "Installing features\.\.\."\s*.*?Write-Host "Done\."'
+        replacement = 'Write-Host "Features installation skipped"\n'
+        patched_script = re.sub(feature_regex, replacement, script_content)
+        with open(winutil_path, 'w', encoding='utf-8') as f:
+            f.write(patched_script)
+        logger.info("Patched winutil.ps1 to disable Invoke-WPFFeatureInstall.")
+    except Exception as e:
+        logger.error(f"Failed to patch ChrisTitusTech WinUtil: {e}")
+        try:
+            show_error_popup(
+                f"Failed to patch ChrisTitusTech WinUtil: {e}",
+                allow_continue=False,
+            )
+        except Exception:
+            pass
+        sys.exit(1)
+    # Execute the patched script
+    cmd1 = f"& '{winutil_path}' -Config '{config_path}' -Run -NoUI"
+    logger.info("Executing patched ChrisTitusTech WinUtil via local script")
     try:
         run_powershell_command(
             cmd1,
