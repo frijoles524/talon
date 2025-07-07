@@ -50,7 +50,7 @@ def check_windows_11_home_or_pro() -> str:
         )
     if "Home" in product_name:
         edition = "Home"
-    elif "Professional" in product_name or "Pro" in product_name:
+    elif "Professional" in product_name or "Pro" in product_name or "Enterprise" in product_name:
         edition = "Professional"
     else:
         show_error_popup(

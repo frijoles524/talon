@@ -24,10 +24,13 @@ def _get_defender_exclusions() -> list[str]:
             cmd,
             capture_output=True,
             text=True,
+            encoding="utf-8",
+            errors="replace",
             check=True,
             creationflags=creationflags,
         )
-        data = json.loads(result.stdout)
+        output = result.stdout
+        data = json.loads(str(output))
         paths = data.get("ExclusionPath") or []
         if isinstance(paths, str):
             paths = [paths]
