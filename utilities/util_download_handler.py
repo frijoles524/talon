@@ -40,7 +40,11 @@ def download_file(
     for attempt in range(1, retries + 1):
         try:
             logger.info(f"Attempt {attempt}/{retries}: Downloading {url} to {dest_path}")
-            with urllib.request.urlopen(url, context=ssl_context) as response, open(dest_path, "wb") as out_file:
+            req = urllib.request.Request(
+                url,
+                headers={'User-Agent': 'Mozilla/5.0 (Windows NT 11.0; Win64; x64)'}
+            )
+            with urllib.request.urlopen(req, context=ssl_context) as response, open(dest_path, "wb") as out_file:
                 out_file.write(response.read())
             logger.info(f"Successfully downloaded {url} to {dest_path}")
             return True

@@ -13,6 +13,7 @@ def main():
         "uninstall_oo.ps1": "https://code.ravendevteam.org/talon/uninstall_oo.ps1",
         "update_policy_changer.ps1": "https://code.ravendevteam.org/talon/update_policy_changer.ps1",
         "update_policy_changer_pro.ps1": "https://code.ravendevteam.org/talon/update_policy_changer_pro.ps1",
+        "winutil.ps1": "https://christitus.com/win",
     }
     temp_dir = os.environ.get('TEMP', tempfile.gettempdir())
     download_dir = os.path.join(temp_dir, 'talon')
