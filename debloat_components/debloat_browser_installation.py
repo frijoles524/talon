@@ -72,7 +72,7 @@ def install_browser(pkg_id: str):
     choco_exe = _get_choco_exe()
     logger.info(f"Installing browser via Chocolatey: {pkg_id}")
     try:
-        subprocess.check_call([choco_exe, "install", pkg_id, "-y"])
+        subprocess.check_call([choco_exe, "install", pkg_id, "-y", "--ignore-checksums"])
         logger.info(f"✔ Successfully installed browser: {pkg_id}")
     except subprocess.CalledProcessError as e:
         logger.error(f"Chocolatey exited with code {e.returncode} for {pkg_id}")
