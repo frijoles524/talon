@@ -37,10 +37,6 @@ def run_powershell_script(
     logger.info(f"Launching PowerShell: {' '.join(cmd)}")
     try:
         creationflags = 0
-        if sys.platform == "win32":
-            creationflags = subprocess.CREATE_NEW_PROCESS_GROUP
-            if hasattr(subprocess, "CREATE_NO_WINDOW"):
-                creationflags |= subprocess.CREATE_NO_WINDOW
         proc = subprocess.Popen(
             cmd,
             stdout=subprocess.PIPE,
@@ -130,17 +126,11 @@ def run_powershell_command(
         "-NoProfile",
         "-ExecutionPolicy",
         "Bypass",
-        "-WindowStyle",
-        "Hidden",
         "-Command",
         command,
     ]
     logger.info(f"Launching PowerShell command: {command}")
     creationflags = 0
-    if sys.platform == "win32":
-        creationflags = subprocess.CREATE_NEW_PROCESS_GROUP
-        if hasattr(subprocess, "CREATE_NO_WINDOW"):
-            creationflags |= subprocess.CREATE_NO_WINDOW
     try:
         proc = subprocess.Popen(
             cmd,
