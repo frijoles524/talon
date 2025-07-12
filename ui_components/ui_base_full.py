@@ -36,7 +36,7 @@ class UIBaseFull:
 
     def show(self):
         for overlay in self.overlays:
-            overlay.show()
+            overlay.showFullScreen()
 
 
 
