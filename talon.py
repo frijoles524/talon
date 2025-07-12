@@ -118,7 +118,6 @@ def run_screen(module_name: str):
 
 
 def _build_install_ui():
-    """Create the installation window and return (app, status_label)."""
     app = QApplication.instance() or QApplication(sys.argv)
     base = UIBaseFull()
     for overlay in base.overlays:
