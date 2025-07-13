@@ -40,3 +40,4 @@ Documentation is available [here](https://docs.ravendevteam.org/talon).
 - [JanluOfficial](https://github.com/JanluOfficial)
 - [Xirdrak](https://github.com/Xirdrak)
 - [Alandlt15](https://github.com/Alandlt15)
+- [lotusflowr](https://github.com/lotusflowr)
