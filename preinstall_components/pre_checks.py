@@ -9,6 +9,8 @@ from utilities.util_download_handler import download_file
 from utilities.util_error_popup import show_error_popup
 from utilities.util_logger import logger
 from utilities.util_ssl import create_ssl_context
+from datetime import datetime, timezone, timedelta
+import winreg
 
 
 
@@ -96,6 +98,15 @@ def _download_and_run_test_script() -> bool:
     return _run_test_script(script_path)
 
 
+def ensure_fresh_install() -> bool:
+        key = winreg.OpenKey(winreg.HKEY_LOCAL_MACHINE,
+                         r"SOFTWARE\Microsoft\Windows NT\CurrentVersion")
+        install_date_seconds, _ = winreg.QueryValueEx(key, "InstallDate")
+        install_date = datetime.fromtimestamp(install_date_seconds, timezone.utc)
+        now = datetime.now(timezone.utc)
+        delta = now - install_date
+        return delta < timedelta(days=1)
+
 
 def main() -> None:
     ensure_defender_disabled()
@@ -104,7 +115,6 @@ def main() -> None:
     _check_temp_writable()
     _download_and_run_test_script()
 
-
-
 if __name__ == "__main__":
     main()
+    
