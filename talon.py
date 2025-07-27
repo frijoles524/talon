@@ -176,6 +176,8 @@ def main(argv=None):
     args = parse_args(argv)
     ensure_admin()
     pre_checks.main()
+    if not pre_checks.ensure_fresh_install():
+        run_screen('screen_fresh_install')
     run_screen('screen_browser_select')
     run_screen('screen_donation_request')
     app = None
