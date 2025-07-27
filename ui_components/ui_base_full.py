@@ -36,8 +36,9 @@ class UIBaseFull:
 
     def show(self):
         for overlay in self.overlays:
-            overlay.showFullScreen()
-
+            if not overlay.is_primary:
+                overlay.showFullScreen()
+        self.primary_overlay.showFullScreen()
 
 
 if __name__ == "__main__":
