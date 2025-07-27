@@ -34,7 +34,7 @@ class ResizeHandler(QObject):
             bottom = pix_y + pix_h
         else:
             bottom = H // 2
-        spacing = 60
+        spacing = 200
         for btn in self.buttons:
             btn.adjustSize()
         widths = [btn.width() for btn in self.buttons]
