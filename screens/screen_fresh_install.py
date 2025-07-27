@@ -55,7 +55,7 @@ def main():
     header_label = UIHeaderText("Continuing may cause irreversable system corruption or data loss.", parent=overlay)
     img_label = UIImage("icon-warning.png", parent=overlay, horizontal_buffer=0.45)
     img_label.lower()
-    buttons = [UIButton("Continue", (255, 204, 0), parent=overlay), UIButton("Exit", (255, 50, 0), parent=overlay)]
+    buttons = [UIButton("Continue", (255, 204, 0), parent=overlay), UIButton("   Exit   ", (144, 238, 144), parent=overlay)]
     buttons[0].clicked.connect(lambda: [overlay.close() for overlay in base.overlays])
     buttons[1].clicked.connect(lambda: sys.exit(0))
     handler = ResizeHandler(overlay, img_label, buttons)
