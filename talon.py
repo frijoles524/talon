@@ -68,12 +68,12 @@ def parse_args(argv=None):
     parser.add_argument(
         "--developer-mode",
         action="store_true",
-        help="Run without the installing overlay (still shows browser + donation screens)",
+        help="Run without the installing overlay (still shows the browser selection and donation consideration screens)",
     )
     parser.add_argument(
         "--headless",
         action="store_true",
-        help="Run fully unattended: no UI, no prompts, skip browser install, no restart",
+        help="Run fully unattended (no UI, no prompts, skip browser install, no restart)",
     )
     for slug, _, _ in DEBLOAT_STEPS:
         dest = f"skip_{slug.replace('-', '_')}_step"
@@ -191,7 +191,6 @@ def main(argv=None):
     status_label = None
     if not args.developer_mode:
         app, status_label = _build_install_ui()
-
     def debloat_sequence():
         for slug, message, func in DEBLOAT_STEPS:
             if getattr(args, f"skip_{slug.replace('-', '_')}_step"):
@@ -203,12 +202,11 @@ def main(argv=None):
             except Exception:
                 return
         if args.headless:
-            _update_status(status_label, "Skipping system restart due to --headless")
+            _update_status(status_label, "Suppressing system restart due to --headless flag used")
             return
         else:
-            _update_status(status_label, "Restarting system…")
+            _update_status(status_label, "Restarting system...")
             subprocess.call(["shutdown", "/r", "/t", "0"])
-
     if args.developer_mode or args.headless:
         debloat_sequence()
     else:
@@ -216,6 +214,8 @@ def main(argv=None):
             threading.Thread(target=debloat_sequence, daemon=True).start()
         QTimer.singleShot(0, start_thread)
         sys.exit(app.exec_())
+
+
 
 if __name__ == "__main__":
     main()
