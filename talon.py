@@ -68,7 +68,12 @@ def parse_args(argv=None):
     parser.add_argument(
         "--developer-mode",
         action="store_true",
-        help="Run without the installing overlay",
+        help="Run without the installing overlay (still shows the browser selection and donation consideration screens)",
+    )
+    parser.add_argument(
+        "--headless",
+        action="store_true",
+        help="Run fully unattended (no UI, no prompts, skip browser install, no restart)",
     )
     for slug, _, _ in DEBLOAT_STEPS:
         dest = f"skip_{slug.replace('-', '_')}_step"
@@ -174,15 +179,18 @@ def _update_status(label: UIHeaderText, message: str):
 
 def main(argv=None):
     args = parse_args(argv)
+    if args.headless:
+        args.developer_mode = True
+        args.skip_browser_installation_step = True
     ensure_admin()
     pre_checks.main()
-    run_screen('screen_browser_select')
-    run_screen('screen_donation_request')
+    if not args.headless:
+        run_screen('screen_browser_select')
+        run_screen('screen_donation_request')
     app = None
     status_label = None
     if not args.developer_mode:
         app, status_label = _build_install_ui()
-
     def debloat_sequence():
         for slug, message, func in DEBLOAT_STEPS:
             if getattr(args, f"skip_{slug.replace('-', '_')}_step"):
@@ -193,16 +201,21 @@ def main(argv=None):
                 func()
             except Exception:
                 return
-        _update_status(status_label, "Restarting system…")
-        subprocess.call(["shutdown", "/r", "/t", "0"])
-
-    if args.developer_mode:
+        if args.headless:
+            _update_status(status_label, "Suppressing system restart due to --headless flag used")
+            return
+        else:
+            _update_status(status_label, "Restarting system...")
+            subprocess.call(["shutdown", "/r", "/t", "0"])
+    if args.developer_mode or args.headless:
         debloat_sequence()
     else:
         def start_thread():
             threading.Thread(target=debloat_sequence, daemon=True).start()
         QTimer.singleShot(0, start_thread)
         sys.exit(app.exec_())
+
+
 
 if __name__ == "__main__":
     main()
