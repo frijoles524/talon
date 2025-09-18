@@ -6,3 +6,6 @@ __pycache__/
 *.pyc
 .DS_Store
 /talon.log
+
+# Created by the build script
+/external_scripts
