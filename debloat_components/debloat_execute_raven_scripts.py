@@ -8,6 +8,7 @@ from utilities.util_error_popup import show_error_popup
 def main():
     scripts = [
         "edge_vanisher.ps1",
+        "uninstall_oo.ps1",
     ]
     for script in scripts:
         logger.info(f"Executing PowerShell script: {script}")
