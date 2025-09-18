@@ -187,13 +187,8 @@ def main(argv=None):
     app = None
     status_label = None
     if not args.developer_mode:
-<<<<<<< HEAD
         global _INSTALL_UI_BASE
         app, status_label, _INSTALL_UI_BASE = _build_install_ui()
-
-=======
-        app, status_label = _build_install_ui()
->>>>>>> 8a21af6179264311b3f619071c059cde1e5c8f15
     def debloat_sequence():
         for slug, message, func in DEBLOAT_STEPS:
             if getattr(args, f"skip_{slug.replace('-', '_')}_step"):
