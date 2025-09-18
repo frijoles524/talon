@@ -10,7 +10,6 @@ from PyQt5.QtWidgets import QApplication
 from PyQt5.QtCore import QObject, QEvent, QTimer, QMetaObject, Qt, Q_ARG
 from utilities.util_admin_check import ensure_admin
 import preinstall_components.pre_checks as pre_checks
-import debloat_components.debloat_download_scripts as debloat_download_scripts
 import debloat_components.debloat_execute_raven_scripts as debloat_execute_raven_scripts
 import debloat_components.debloat_execute_external_scripts as debloat_execute_external_scripts
 import debloat_components.debloat_browser_installation as debloat_browser_installation
@@ -23,15 +22,11 @@ from ui_components.ui_title_text import UITitleText
 
 
 
+_INSTALL_UI_BASE = None
 DEBLOAT_STEPS = [
     (
-        "download-scripts",
-        "Downloading some necessary scripts... (1/8)",
-        debloat_download_scripts.main,
-    ),
-    (
         "execute-raven-scripts",
-        "Executing debloating scripts... (2/8)",
+        "Executing debloating scripts...",
         debloat_execute_raven_scripts.main,
     ),
     (
@@ -41,22 +36,22 @@ DEBLOAT_STEPS = [
     ),
     (
         "execute-external-scripts",
-        "Debloating Windows... (4/8)",
+        "Debloating Windows...",
         debloat_execute_external_scripts.main,
     ),
     (
         "registry-tweaks",
-        "Making some visual tweaks... (6/8)",
+        "Making some visual tweaks...",
         debloat_registry_tweaks.main,
     ),
     (
         "configure-updates",
-        "Configuring Windows Update policies... (7/8)",
+        "Configuring Windows Update policies...",
         debloat_configure_updates.main,
     ),
     (
         "apply-background",
-        "Setting your desktop background... (8/8)",
+        "Setting your desktop background...",
         debloat_apply_background.main,
     ),
 ]
@@ -128,7 +123,7 @@ def _build_install_ui():
     for overlay in base.overlays:
         overlay.setWindowOpacity(0.8)
     overlay = base.primary_overlay
-    title_label = UITitleText("Installing Talon...", parent=overlay)
+    title_label = UITitleText("Talon is installing", parent=overlay)
     UIHeaderText(
         "Please don't use your keyboard or mouse. You can watch as Talon works.",
         parent=overlay,
@@ -160,7 +155,7 @@ def _build_install_ui():
     StatusResizer(overlay, status_label, bottom_margin=title_label._top_margin)
     base.show()
     status_label.raise_()
-    return app, status_label
+    return app, status_label, base
 
 
 
@@ -177,6 +172,8 @@ def _update_status(label: UIHeaderText, message: str):
 
 
 
+
+
 def main(argv=None):
     args = parse_args(argv)
     if args.headless:
@@ -190,7 +187,13 @@ def main(argv=None):
     app = None
     status_label = None
     if not args.developer_mode:
+<<<<<<< HEAD
+        global _INSTALL_UI_BASE
+        app, status_label, _INSTALL_UI_BASE = _build_install_ui()
+
+=======
         app, status_label = _build_install_ui()
+>>>>>>> 8a21af6179264311b3f619071c059cde1e5c8f15
     def debloat_sequence():
         for slug, message, func in DEBLOAT_STEPS:
             if getattr(args, f"skip_{slug.replace('-', '_')}_step"):
