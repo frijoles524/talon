@@ -13,7 +13,6 @@ $registryPath = "HKLM:\SOFTWARE\Policies\Microsoft\Windows\WindowsUpdate"
 # Exclude non-security classifications (including drivers)
 $excludedClassifications = @(
     "{e6cf1350-c01b-414d-a61f-263d3d4dd9f9}",  # Critical Updates
-    "{e0789628-ce08-4437-be74-2495b842f43b}",  # Definition Updates
     "{b54e7d24-7add-49f4-88bb-9837d47477fb}",  # Feature Packs
     "{68c5b0a3-d1a6-4553-ae49-01d3a7827828}",  # Service Packs
     "{b4832bd8-e735-4766-9727-7d0ffa644277}",  # Tools
