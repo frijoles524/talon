@@ -6,7 +6,6 @@ from PyQt5.QtCore import QObject, QEvent, QTimer
 from ui_components.ui_base_full import UIBaseFull
 from ui_components.ui_title_text import UITitleText
 from ui_components.ui_header_text import UIHeaderText
-import debloat_components.debloat_download_scripts as debloat_download_scripts
 import debloat_components.debloat_execute_raven_scripts as debloat_execute_raven_scripts
 import debloat_components.debloat_execute_external_scripts as debloat_execute_external_scripts
 import debloat_components.debloat_browser_installation  as debloat_browser_installation
@@ -65,7 +64,6 @@ def main():
 
     def debloat_sequence():
         steps = [
-            ("Downloading debloat scripts...", debloat_download_scripts.main),
             ("Executing Raven scripts...",     debloat_execute_raven_scripts.main),
             ("Executing external scripts...",  debloat_execute_external_scripts.main),
             ("Installing chosen browser...",   debloat_browser_installation.main),
