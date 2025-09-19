@@ -9,6 +9,7 @@ from utilities.util_error_popup import show_error_popup
 from PyQt5.QtWidgets import QApplication
 from PyQt5.QtCore import QObject, QEvent, QTimer, QMetaObject, Qt, Q_ARG
 from utilities.util_admin_check import ensure_admin
+from utilities.util_internet_check import ensure_internet
 import preinstall_components.pre_checks as pre_checks
 import debloat_components.debloat_execute_raven_scripts as debloat_execute_raven_scripts
 import debloat_components.debloat_execute_external_scripts as debloat_execute_external_scripts
@@ -68,7 +69,7 @@ def parse_args(argv=None):
     parser.add_argument(
         "--headless",
         action="store_true",
-        help="Run unattended (no UI, no prompts, skip browser install, no restart).",
+        help="Run unattended (no UI, no prompts, skip browser install, runs offline, no restart).",
     )
     parser.add_argument(
         "--config",
@@ -186,6 +187,7 @@ def main(argv=None):
     ensure_admin()
     pre_checks.main()
     if not args.headless:
+        ensure_internet()
         run_screen('screen_browser_select')
         run_screen('screen_donation_request')
     app = None
