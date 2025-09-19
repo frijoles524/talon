@@ -63,12 +63,18 @@ def parse_args(argv=None):
     parser.add_argument(
         "--developer-mode",
         action="store_true",
-        help="Run without the installing overlay (still shows the browser selection and donation consideration screens)",
+        help="Run without the installing overlay (still shows the browser selection and donation consideration screens).",
     )
     parser.add_argument(
         "--headless",
         action="store_true",
-        help="Run fully unattended (no UI, no prompts, skip browser install, no restart)",
+        help="Run unattended (no UI, no prompts, skip browser install, no restart).",
+    )
+    parser.add_argument(
+        "--config",
+        dest="config",
+        metavar="PATH",
+        help="Pass a custom WinUtil configuration to use instead of the default Talon configuration.",
     )
     for slug, _, _ in DEBLOAT_STEPS:
         dest = f"skip_{slug.replace('-', '_')}_step"
@@ -172,8 +178,6 @@ def _update_status(label: UIHeaderText, message: str):
 
 
 
-
-
 def main(argv=None):
     args = parse_args(argv)
     if args.headless:
@@ -196,7 +200,10 @@ def main(argv=None):
                 continue
             _update_status(status_label, message)
             try:
-                func()
+                if func is debloat_execute_external_scripts.main:
+                    func(args.config)
+                else:
+                    func()
             except Exception:
                 return
         if args.headless:

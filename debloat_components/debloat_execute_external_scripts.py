@@ -1,19 +1,71 @@
 import os
 import sys
 import re
+import json
+import ssl
+import tempfile
+import urllib.request
+import urllib.parse
 from utilities.util_logger import logger
 from utilities.util_powershell_handler import run_powershell_command
 from utilities.util_error_popup import show_error_popup
 
 
 
-def main():
+def _is_url(value: str) -> bool:
+	try:
+		p = urllib.parse.urlparse(value)
+		return p.scheme in ("http", "https") and bool(p.netloc)
+	except Exception:
+		return False
+
+
+
+def _download_config(url: str) -> str:
+	logger.info(f"Downloading WinUtil config from: {url}")
+	ctx = None
+	if url.lower().startswith("https"):
+		try:
+			import certifi
+			ctx = ssl.create_default_context(cafile=certifi.where())
+		except Exception:
+			ctx = ssl.create_default_context()
+	request = urllib.request.Request(url, headers={"User-Agent": "Talon/1.0"})
+	with urllib.request.urlopen(request, timeout=30, context=ctx) as resp:
+		data = resp.read()
+	try:
+		json.loads(data.decode("utf-8-sig"))
+	except Exception as e:
+		raise RuntimeError(f"Downloaded config is not valid JSON: {e}")
+	fd, tmp_path = tempfile.mkstemp(prefix="talon_winutil_", suffix=".json")
+	with os.fdopen(fd, "wb") as f:
+		f.write(data)
+	logger.info(f"Saved downloaded config to: {tmp_path}")
+	return tmp_path
+
+
+
+def main(config_path=None):
 	if getattr(sys, 'frozen', False):
 		base_path = os.path.dirname(sys.executable)
 	else:
 		components_dir = os.path.dirname(os.path.abspath(__file__))
 		base_path = os.path.dirname(components_dir)
-	config_path = os.path.join(base_path, 'configs', 'default.json')
+	if config_path and isinstance(config_path, str) and _is_url(config_path):
+		try:
+			config_path = _download_config(config_path)
+		except Exception as e:
+			logger.error(f"Failed to download WinUtil config: {e}")
+			try:
+				show_error_popup(
+					f"Failed to download WinUtil config from URL.\n{e}",
+					allow_continue=False,
+				)
+			except Exception:
+				pass
+			sys.exit(1)
+	if not config_path:
+		config_path = os.path.join(base_path, 'configs', 'default.json')
 	if not os.path.exists(config_path):
 		logger.error(f"WinUtil config not found: {config_path}")
 		try:
