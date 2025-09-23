@@ -25,7 +25,7 @@ def ensure_internet(max_attempts: int = 3, url: str = "https://ravendevteam.org"
                 time.sleep(1)
     show_error_popup(
         "No internet connection detected.\n"
-        "An active internet connection is required to run Talon in non-headless mode.\n"
+        "An active internet connection is required to run Talon in non-headless mode.\n",
         allow_continue=False,
     )
     return False

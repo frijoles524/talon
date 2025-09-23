@@ -1,5 +1,5 @@
 @echo off
-set FileVersion=1.0.0.9
+set FileVersion=1.0.0.10
 set ProductVersion=2.1.0.0
 
 :: Talon relies on ChrisTitusTech's WinUtil and Raphi's Win11Debloat scripts for a heavy chunk of the
