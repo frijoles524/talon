@@ -57,7 +57,7 @@ def main():
     img_label.lower()
     browser_options = [
         ("Chrome",              "googlechrome",   (251, 191, 14)),
-        ("Edge",                "microsoft-edge", (44, 195, 193)),
+        ("Waterfox",            "waterfox",       (2, 203, 250)),
         ("Brave (Recommended)", "brave",          (255, 47, 0)),
         ("Firefox",             "firefox",        (89, 58, 177)),
         ("LibreWolf",           "librewolf",      (0, 174, 255)),

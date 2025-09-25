@@ -80,70 +80,34 @@ def _get_choco_exe() -> str:
 
 
 def install_browser(pkg_id: str):
-    choco_exe = _get_choco_exe()
-    logger.info(f"Installing browser via Chocolatey: {pkg_id}")
-    cmd = [
-        choco_exe,
-        "install",
-        pkg_id,
-        "-y",
-        "--ignore-checksums",
-        "--no-progress",
-        "--use-package-exit-codes",
-    ]
-    try:
-        result = subprocess.run(
-            cmd,
-            check=False,
-            timeout=900,
-        )
-        if result.returncode in (0, 3010):
-            if result.returncode == 3010:
-                logger.info(f"Successfully installed browser: {pkg_id}, reboot required.")
-            else:
-                logger.info(f"Successfully installed browser: {pkg_id}")
-            return
-        logger.error(
-            f"Browser install failed for {pkg_id}. Exit code: {result.returncode}. Command: {' '.join(cmd)}"
-        )
-        hint = None
-        if result.returncode in (1603,):
-            hint = (
-                "Installer returned 1603 (fatal error). This often indicates a pending reboot, "
-                "conflicting running processes, or an existing installation."
-            )
-        elif result.returncode in (1618,):
-            hint = (
-                "Installer returned 1618 (another installation is already in progress). "
-                "Please finish the other install and try again."
-            )
-        elif result.returncode in (1605,):
-            hint = "Installer returned 1605 (product not installed)."
-        error_msg = (
-            "A problem occurred during browser installation via Chocolatey. "
-            f"As a result, the browser '{pkg_id}' could not be installed successfully.\n"
-            f"Exit code: {result.returncode}"
-        )
-        if hint:
-            error_msg += f"\n{hint}"
-        show_error_popup(error_msg, allow_continue=True)
-    except subprocess.TimeoutExpired:
-        logger.error(
-            f"Browser install timed out for {pkg_id} after 15 minutes. Command: {' '.join(cmd)}"
-        )
-        show_error_popup(
-            "Browser installation took too long and was cancelled. "
-            f"'{pkg_id}' may not be installed.",
-            allow_continue=True,
-        )
-    except Exception as e:
-        logger.error(f"Unexpected error installing {pkg_id}: {e}")
-        show_error_popup(
-            "A problem occurred with Chocolatey, the package manager that handles browser installation. "
-            f"As a result, the browser '{pkg_id}' could not be installed successfully.\n"
-            f"Error: {e}",
-            allow_continue=True,
-        )
+	choco_exe = _get_choco_exe()
+	logger.info(f"Installing browser via Chocolatey: {pkg_id}")
+	try:
+		result = subprocess.run(
+			[choco_exe, "install", pkg_id, "-y", "--ignore-checksums"],
+			check=False
+		)
+		if result.returncode in (0, 3010):
+			if result.returncode == 3010:
+				logger.info(f"Successfully installed browser: {pkg_id}, reboot required.")
+			else:
+				logger.info(f"Successfully installed browser: {pkg_id}")
+			return
+		logger.error(f"Chocolatey exited with code {result.returncode} for {pkg_id}")
+		show_error_popup(
+			"A problem occurred with Chocolatey, the package manager that handles browser installation. "
+			f"As a result, the browser '{pkg_id}' could not be installed successfully.\n"
+			f"Chocolatey exit code: {result.returncode}",
+			allow_continue=True
+		)
+	except Exception as e:
+		logger.error(f"Unexpected error installing {pkg_id}: {e}")
+		show_error_popup(
+			"A problem occurred with Chocolatey, the package manager that handles browser installation. "
+			f"As a result, the browser '{pkg_id}' could not be installed successfully.\n"
+			f"Error: {e}",
+			allow_continue=True
+		)
 
 
 
