@@ -79,35 +79,50 @@ def _get_choco_exe() -> str:
 
 
 
-def install_browser(pkg_id: str):
+def _install_choco_package(pkg_id: str, display_name: str):
 	choco_exe = _get_choco_exe()
-	logger.info(f"Installing browser via Chocolatey: {pkg_id}")
+	logger.info(f"Installing via Chocolatey: {display_name} ({pkg_id})")
 	try:
 		result = subprocess.run(
-			[choco_exe, "install", pkg_id, "-y", "--ignore-checksums"],
+			[choco_exe, "install", pkg_id, "-y"],
 			check=False
 		)
 		if result.returncode in (0, 3010):
 			if result.returncode == 3010:
-				logger.info(f"Successfully installed browser: {pkg_id}, reboot required.")
+				logger.info(f"Successfully installed {display_name}, reboot required.")
 			else:
-				logger.info(f"Successfully installed browser: {pkg_id}")
+				logger.info(f"Successfully installed {display_name}.")
 			return
 		logger.error(f"Chocolatey exited with code {result.returncode} for {pkg_id}")
 		show_error_popup(
-			"A problem occurred with Chocolatey, the package manager that handles browser installation. "
-			f"As a result, the browser '{pkg_id}' could not be installed successfully.\n"
+			"A problem occurred with Chocolatey during installation. "
+			f"'{display_name}' could not be installed successfully.\n"
 			f"Chocolatey exit code: {result.returncode}",
 			allow_continue=True
 		)
 	except Exception as e:
 		logger.error(f"Unexpected error installing {pkg_id}: {e}")
 		show_error_popup(
-			"A problem occurred with Chocolatey, the package manager that handles browser installation. "
-			f"As a result, the browser '{pkg_id}' could not be installed successfully.\n"
+			"A problem occurred with Chocolatey during installation. "
+			f"'{display_name}' could not be installed successfully.\n"
 			f"Error: {e}",
 			allow_continue=True
 		)
+
+
+
+def install_vcredist():
+	# Some people may say see this and say "why is a DEBLOATER installing BLOAT!?"
+	# This step is necessary to install dependencies that a very, very large amount of
+	# modern programs rely on. For example, Waterfox. These dependencies cannot reasonably
+	# be considered "bloat" as bloat is unnecessary, while these dependencies, a very large
+	# amount of the time, are necessary.
+	_install_choco_package("vcredist140", "Microsoft Visual C++ 2015–2022 Redistributable")
+
+
+
+def install_browser(pkg_id: str):
+	_install_choco_package(pkg_id, f"browser '{pkg_id}'")
 
 
 
@@ -120,6 +135,7 @@ def main():
 		show_error_popup(f"Internal error reading browser choice:\n{e}", allow_continue=False)
 		sys.exit(1)
 	ensure_chocolatey()
+	install_vcredist()
 	install_browser(pkg_id)
 
 
