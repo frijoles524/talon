@@ -7,7 +7,7 @@ from utilities.util_logger import logger
 from utilities.util_error_popup import show_error_popup
 
 
-def ensure_internet(max_attempts: int = 3, url: str = "https://ravendevteam.org", timeout: int = 5) -> bool:
+def ensure_internet(max_attempts: int = 3, url: str = "https://ravendevteam.org", timeout: int = 5, allow_continue: bool = False,) -> bool:
     ssl_ctx = ssl.create_default_context(cafile=certifi.where())
     for attempt in range(1, max_attempts + 1):
         try:
@@ -23,9 +23,19 @@ def ensure_internet(max_attempts: int = 3, url: str = "https://ravendevteam.org"
             logger.warning(f"Internet check failed: {e}")
             if attempt < max_attempts:
                 time.sleep(1)
-    show_error_popup(
-        "No internet connection detected.\n"
-        "An active internet connection is required to run Talon in non-headless mode.\n",
-        allow_continue=False,
-    )
+    if allow_continue:
+        show_error_popup(
+            "No internet connection detected.\n\n"
+            "Talon can continue without internet. If you proceed now, the browser installation step will be skipped.\n\n"
+            "Options:\n"
+            "- Connect to the internet and run Talon again to install your browser automatically.\n"
+            "- Or click Continue to proceed without a browser install (you can install a browser later).",
+            allow_continue=True,
+        )
+    else:
+        show_error_popup(
+            "No internet connection detected.\n"
+            "An active internet connection is required to run Talon in non-headless mode.\n",
+            allow_continue=False,
+        )
     return False

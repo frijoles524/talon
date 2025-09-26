@@ -187,8 +187,11 @@ def main(argv=None):
     ensure_admin()
     pre_checks.main()
     if not args.headless:
-        ensure_internet()
-        run_screen('screen_browser_select')
+        online = ensure_internet(allow_continue=True)
+        if online:
+            run_screen('screen_browser_select')
+        else:
+            args.skip_browser_installation_step = True
         run_screen('screen_donation_request')
     app = None
     status_label = None
