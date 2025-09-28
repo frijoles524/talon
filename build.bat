@@ -1,5 +1,5 @@
 @echo off
-set FileVersion=1.0.0.13
+set FileVersion=1.0.0.14
 set ProductVersion=2.1.0.0
 
 :: Talon relies on ChrisTitusTech's WinUtil and Raphi's Win11Debloat scripts for a heavy chunk of the
@@ -14,11 +14,13 @@ mkdir "%SCRIPT_BUNDLE_DIR%"
 powershell -NoProfile -ExecutionPolicy Bypass -Command ^
 	"[Net.ServicePointManager]::SecurityProtocol = [Net.SecurityProtocolType]::Tls12; " ^
 	"$u1 = 'https://christitus.com/win'; " ^
-	"$u2 = 'https://debloat.raphi.re/'; " ^
+	"$u2 = 'https://api.github.com/repos/Raphire/Win11Debloat/zipball/2025.09.27'; " ^
 	"$o1 = Join-Path '%SCRIPT_BUNDLE_DIR%' 'winutil.ps1'; " ^
-	"$o2 = Join-Path '%SCRIPT_BUNDLE_DIR%' 'win11debloat.ps1'; " ^
+	"$zip2 = Join-Path '%SCRIPT_BUNDLE_DIR%' 'win11debloat.zip'; " ^
 	"Invoke-WebRequest -Uri $u1 -OutFile $o1 -UseBasicParsing; " ^
-	"Invoke-WebRequest -Uri $u2 -OutFile $o2 -UseBasicParsing; " ^
+	"Invoke-WebRequest -Uri $u2 -OutFile $zip2 -UseBasicParsing; " ^
+	"try { Expand-Archive -LiteralPath $zip2 -DestinationPath '%SCRIPT_BUNDLE_DIR%' -Force } catch { Write-Error $_; exit 1 }; " ^
+	"Remove-Item -LiteralPath $zip2 -Force; " ^
 	"$c = Get-Content -LiteralPath $o1 -Raw -Encoding UTF8; " ^
 	"$patched = [regex]::Replace($c,'(?ms)^\s*Write-Host ""Installing features\.\.\.""\s*.*?Write-Host ""Done\.""','Write-Host ""Features installation skipped""' + [Environment]::NewLine); " ^
 	"Set-Content -LiteralPath $o1 -Value $patched -Encoding UTF8;"

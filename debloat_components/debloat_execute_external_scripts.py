@@ -107,7 +107,7 @@ def main(config_path=None):
 		except Exception:
 			pass
 		sys.exit(1)
-	win11debloat_path = os.path.join(base_path, 'external_scripts', 'win11debloat.ps1')
+	win11debloat_path = os.path.join(base_path, 'external_scripts', 'Raphire-Win11Debloat-c523386', 'Win11Debloat.ps1')
 	if not os.path.exists(win11debloat_path):
 		logger.error(f"Bundled Win11Debloat script not found: {win11debloat_path}")
 		try:
