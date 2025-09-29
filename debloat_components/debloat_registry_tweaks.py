@@ -35,6 +35,9 @@ def main():
         (winreg.HKEY_CURRENT_USER,
          r"Software\Microsoft\Windows\CurrentVersion\Explorer\Advanced",
          "HideFileExt", winreg.REG_DWORD, 0),
+        (winreg.HKEY_CURRENT_USER,
+         r"Control Panel\Desktop",
+         "DragFullWindows", winreg.REG_SZ, "1"),
     ]
     for hive, key_path, name, value_type, value in registry_modifications:
         try:
