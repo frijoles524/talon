@@ -190,6 +190,7 @@ def _update_status(bus, label: UIHeaderText, message: str):
 
 def main(argv=None):
 	args = parse_args(argv)
+	logger.debug(f"Running with args {sys.argv[1:]}")
 	if args.headless:
 		args.developer_mode = True
 		args.skip_browser_installation_step = True

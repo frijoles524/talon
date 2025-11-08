@@ -1,8 +1,7 @@
 import os
-import sys
 import tempfile
 import subprocess
-from utilities.util_windows_check import check_windows_11_home_or_pro
+from utilities.util_windows_check import check_windows_11_home_or_pro, check_system
 from utilities.util_error_popup import show_error_popup
 from utilities.util_logger import logger
 
@@ -66,6 +65,9 @@ def _run_test_script(script_path: str) -> bool:
 def main() -> None:
     check_windows_11_home_or_pro()
     _check_temp_writable()
+    logger.info("Checking windows installation...")
+    if not check_system():
+        show_error_popup("Warning!\nThis device does not appear to have a fresh installation of Windows.\nRunning Talon on a used system can lead to data loss.\nWe are not able to provide assistance if anything goes wrong beyond this point.", allow_continue=True)
 
 
 

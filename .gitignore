@@ -9,3 +9,7 @@ __pycache__/
 
 # Created by the build script
 /external_scripts
+
+# Development environments
+.venv/
+venv/
