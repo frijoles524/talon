@@ -116,6 +116,7 @@ def main() -> None:
     _check_temp_writable()
     logger.info("Checking windows installation...")
     if not check_system():
+        logger.warning("Used windows installation detected!")
         show_error_popup("Warning!\nThis device does not appear to have a fresh installation of Windows.\nRunning Talon on a used system can lead to data loss.\nWe are not able to provide assistance if anything goes wrong beyond this point.", allow_continue=True)
 
 
