@@ -4,10 +4,8 @@ import subprocess
 from utilities.util_windows_check import check_windows_11_home_or_pro
 from utilities.util_error_popup import show_error_popup
 from utilities.util_logger import logger
+from pathlib import Path
 import datetime
-import win32evtlog
-import win32com.client
-
 
 
 def _check_temp_writable() -> bool:
@@ -63,61 +61,47 @@ def _run_test_script(script_path: str) -> bool:
     )
     return False
 
-def _check_user(max_days_since_creation=7):
-    profile_path = rf"C:\Users\{os.getlogin()}"
-    if not profile_path:
-        return False
+def _check_user(max_days):
     try:
-        creation_time = datetime.datetime.fromtimestamp(os.path.getctime(profile_path))
+        profile_path = Path.home()
+        creation_time = datetime.datetime.fromtimestamp(profile_path.stat().st_birthtime)
         days_since_creation = (datetime.datetime.now() - creation_time).days
-        return days_since_creation <= max_days_since_creation
+        return days_since_creation <= max_days
     except Exception:
         return False
 
-def _check_boot_count(max_boots=5):
+def _check_boot_count(max_boots):
     try:
-        server = 'localhost'
-        source = 'System'
-        handle = win32evtlog.OpenEventLog(server, source)
-        flags = win32evtlog.EVENTLOG_BACKWARDS_READ | win32evtlog.EVENTLOG_SEQUENTIAL_READ
-        boot_events_count = 0
-        while True:
-            events = win32evtlog.ReadEventLog(handle, flags, 0)
-            if not events:
-                break
-            for e in events:
-                if e.SourceName == 'Microsoft-Windows-Kernel-Boot':
-                    boot_events_count += 1
-        return boot_events_count <= max_boots
+        cmd = "(Get-WinEvent -FilterHashtable @{LogName='System'; ID=6005} | Measure-Object).Count"
+        count = int(subprocess.check_output(["powershell", "-NoProfile", "-Command", cmd]))
+        return count <= max_boots
     except Exception:
         return False
 
-def _check_updates(max_updates=5):
+def _check_updates(max_updates):
     try:
-        session = win32com.client.Dispatch("Microsoft.Update.Session")
-        searcher = session.CreateUpdateSearcher()
-        search_result = searcher.Search("IsInstalled=1")
-        updates_count = search_result.Updates.Count
-        return updates_count <= max_updates
-    except Exception as e:
-        print("Error:", e)
+        cmd = '(New-Object -ComObject "Microsoft.Update.Session").CreateUpdateSearcher().Search("IsInstalled=1").Updates.Count'
+        count = int(subprocess.check_output(["powershell", "-NoProfile", "-Command", cmd]))
+        return count <= max_updates
+    except Exception:
         return False
 
 def check_system(max_days_since_user_creation=7, max_boots=5, max_updates=5):
-    checks = [
+    if not all([
         _check_user(max_days_since_user_creation),
         _check_boot_count(max_boots),
         _check_updates(max_updates)
-    ]
-    return all(checks)
+    ]):
+        logger.warning("Used windows installation detected!")
+        show_error_popup("Warning!\nThis device does not appear to have a fresh installation of Windows.\n" \
+        "Running Talon on a used system can lead to data loss.\nWe are not able to provide assistance if anything goes wrong beyond this point.", allow_continue=True)
+
 
 def main() -> None:
     check_windows_11_home_or_pro()
     _check_temp_writable()
     logger.info("Checking windows installation...")
-    if not check_system():
-        logger.warning("Used windows installation detected!")
-        show_error_popup("Warning!\nThis device does not appear to have a fresh installation of Windows.\nRunning Talon on a used system can lead to data loss.\nWe are not able to provide assistance if anything goes wrong beyond this point.", allow_continue=True)
+    check_system()
 
 
 
